@@ -12,6 +12,8 @@ const cloudinary = require('cloudinary').v2;
 const JWT_SECRET = process.env.JWT_SECRET || 'super_secret_jwt_key_develop';
 const PORT = process.env.PORT || 3001;
 
+const app = express();
+
 app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
