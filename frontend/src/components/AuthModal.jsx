@@ -4,7 +4,6 @@ import axios from 'axios';
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
 const AuthModal = ({ onClose, onLoginSuccess }) => {
-  const [isRegister, setIsRegister] = useState(false);
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -18,15 +17,9 @@ const AuthModal = ({ onClose, onLoginSuccess }) => {
 
     setLoading(true);
     try {
-      if (isRegister) {
-        await axios.post(`${API_URL}/api/auth/register`, { username, password });
-        alert("Registration successful! You can now log in.");
-        setIsRegister(false);
-      } else {
-        const response = await axios.post(`${API_URL}/api/auth/login`, { username, password });
-        onLoginSuccess(response.data.token, response.data.username);
-        onClose();
-      }
+      const response = await axios.post(`${API_URL}/api/auth/login`, { username, password });
+      onLoginSuccess(response.data.token, response.data.username);
+      onClose();
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.error || "Authentication failed. Make sure your local backend is running.");
@@ -39,7 +32,7 @@ const AuthModal = ({ onClose, onLoginSuccess }) => {
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content" onClick={e => e.stopPropagation()}>
         <div className="modal-header">
-          <h2>{isRegister ? 'Register Owner' : 'Owner Login'}</h2>
+          <h2>Owner Login</h2>
           <button className="close-btn" onClick={onClose}>&times;</button>
         </div>
         
@@ -66,15 +59,9 @@ const AuthModal = ({ onClose, onLoginSuccess }) => {
           </div>
           
           <button type="submit" className="btn-primary" style={{width: '100%', marginTop: '1rem'}} disabled={loading}>
-            {loading ? 'Processing...' : (isRegister ? 'Register' : 'Login')}
+            {loading ? 'Processing...' : 'Login'}
           </button>
         </form>
-        
-        <div style={{marginTop: '1.5rem', textAlign: 'center'}}>
-          <p style={{color: 'var(--primary-color)', fontSize: '0.9rem', cursor: 'pointer', textDecoration: 'underline'}} onClick={() => setIsRegister(!isRegister)}>
-            {isRegister ? "Already have an account? Login here" : "Don't have an owner account? Register here"}
-          </p>
-        </div>
       </div>
     </div>
   );

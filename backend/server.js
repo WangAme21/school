@@ -47,24 +47,6 @@ function authenticateToken(req, res, next) {
   });
 }
 
-app.post('/api/auth/register', async (req, res) => {
-  try {
-    const { username, password } = req.body;
-    if (!username || !password) return res.status(400).json({ error: 'Username and password required' });
-    
-    const [existing] = await db.query('SELECT * FROM users WHERE username = ?', [username]);
-    if (existing.length > 0) return res.status(400).json({ error: 'Username already exists' });
-    
-    const salt = await bcrypt.genSalt(10);
-    const hash = await bcrypt.hash(password, salt);
-    
-    await db.query('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hash]);
-    res.status(201).json({ message: 'User registered successfully' });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ error: 'Registration failed' });
-  }
-});
 
 app.post('/api/auth/login', async (req, res) => {
   try {
