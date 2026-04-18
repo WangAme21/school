@@ -45,8 +45,8 @@ async function initDB() {
 
     // Generate defaults
     const hash = await bcrypt.hash('johngwapo', 10);
-    await pool.query('INSERT IGNORE INTO users (username, password_hash) VALUES ("jeian", ?)', [hash]);
-    await pool.query('INSERT IGNORE INTO users (username, password_hash) VALUES ("john", ?)', [hash]);
+    await pool.query('INSERT INTO users (username, password_hash) VALUES ("jeian", ?) ON DUPLICATE KEY UPDATE password_hash = ?', [hash, hash]);
+    await pool.query('INSERT INTO users (username, password_hash) VALUES ("john", ?) ON DUPLICATE KEY UPDATE password_hash = ?', [hash, hash]);
 
     // Force delete target card
     await pool.query('DELETE FROM items WHERE title = "History of Books"');
