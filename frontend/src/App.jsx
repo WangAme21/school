@@ -145,7 +145,13 @@ function App() {
                     <h3 className="card-title">{item.title}</h3>
                     {item.description && <p className="card-desc">{item.description}</p>}
                     
-                    {token && (
+                    {item.author_username && (
+                      <p style={{ fontSize: '0.85rem', color: 'var(--secondary-color)', marginBottom: '1rem', fontStyle: 'italic' }}>
+                        Added by: {item.author_username}
+                      </p>
+                    )}
+                    
+                    {token && item.author_username === currentUsername && (
                       <div className="card-actions">
                         <button className="btn-edit" onClick={() => startEdit(item)}>Edit</button>
                         <button className="btn-delete" onClick={() => handleDelete(item.id)}>Delete</button>

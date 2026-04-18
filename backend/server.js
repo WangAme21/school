@@ -86,7 +86,12 @@ app.post('/api/auth/login', async (req, res) => {
 
 app.get('/api/items', async (req, res) => {
   try {
-    const [rows] = await db.query('SELECT * FROM items ORDER BY created_at DESC');
+    const [rows] = await db.query(`
+      SELECT items.*, users.username as author_username 
+      FROM items 
+      LEFT JOIN users ON items.user_id = users.id 
+      ORDER BY items.created_at DESC
+    `);
     res.json(rows);
   } catch (err) {
     console.error(err);
@@ -107,15 +112,16 @@ app.post('/api/items', authenticateToken, upload.single('image'), async (req, re
     }
 
     const [result] = await db.query(
-      'INSERT INTO items (title, description, image_url) VALUES (?, ?, ?)',
-      [title, description, image_url]
+      'INSERT INTO items (title, description, image_url, user_id) VALUES (?, ?, ?, ?)',
+      [title, description, image_url, req.user.id]
     );
 
     const newItem = {
       id: result.insertId,
       title,
       description,
-      image_url
+      image_url,
+      author_username: req.user.username
     };
 
     res.status(201).json(newItem);
@@ -130,12 +136,15 @@ app.put('/api/items/:id', authenticateToken, async (req, res) => {
     const { id } = req.params;
     const { title, description } = req.body;
     
+    // Check ownership first
+    const [existing] = await db.query('SELECT * FROM items WHERE id = ? AND user_id = ?', [id, req.user.id]);
+    if (existing.length === 0) {
+      return res.status(403).json({ error: 'You are not authorized to edit this item or it does not exist' });
+    }
+    
     await db.query('UPDATE items SET title = ?, description = ? WHERE id = ?', [title, description, id]);
     
     const [rows] = await db.query('SELECT * FROM items WHERE id = ?', [id]);
-    if (rows.length === 0) {
-      return res.status(404).json({ error: 'Item not found' });
-    }
     
     res.json(rows[0]);
   } catch (err) {
@@ -148,9 +157,10 @@ app.delete('/api/items/:id', authenticateToken, async (req, res) => {
   try {
     const { id } = req.params;
     
-    const [rows] = await db.query('SELECT * FROM items WHERE id = ?', [id]);
+    // Check ownership first
+    const [rows] = await db.query('SELECT * FROM items WHERE id = ? AND user_id = ?', [id, req.user.id]);
     if (rows.length === 0) {
-      return res.status(404).json({ error: 'Item not found' });
+      return res.status(403).json({ error: 'You are not authorized to delete this item or it does not exist' });
     }
 
     const item = rows[0];

@@ -20,10 +20,17 @@ async function initDB() {
         title VARCHAR(255) NOT NULL,
         description TEXT,
         image_url VARCHAR(255) NOT NULL,
+        user_id INT,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
     await pool.query(itemsTable);
+
+    try {
+      await pool.query('ALTER TABLE items ADD COLUMN user_id INT');
+    } catch(e) {
+      // Ignored if column already exists
+    }
 
     const usersTable = `
       CREATE TABLE IF NOT EXISTS users (
