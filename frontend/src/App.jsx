@@ -2,6 +2,22 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UploadModal from './components/UploadModal';
 import AuthModal from './components/AuthModal';
+import { SortableItem } from './components/SortableItem';
+import {
+  DndContext, 
+  closestCenter,
+  KeyboardSensor,
+  PointerSensor,
+  TouchSensor,
+  useSensor,
+  useSensors,
+} from '@dnd-kit/core';
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  rectSortingStrategy,
+} from '@dnd-kit/sortable';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
@@ -17,6 +33,23 @@ function App() {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
+
+  const sensors = useSensors(
+    useSensor(PointerSensor, {
+      activationConstraint: {
+        distance: 5,
+      },
+    }),
+    useSensor(TouchSensor, {
+      activationConstraint: {
+        delay: 250, // Long press to start dragging on mobile
+        tolerance: 5,
+      },
+    }),
+    useSensor(KeyboardSensor, {
+      coordinateGetter: sortableKeyboardCoordinates,
+    })
+  );
 
   useEffect(() => {
     fetchItems();
@@ -81,6 +114,27 @@ function App() {
     }
   };
 
+  const handleDragEnd = async (event) => {
+    const { active, over } = event;
+    
+    if (active.id !== over.id) {
+      const oldIndex = items.findIndex((item) => item.id === active.id);
+      const newIndex = items.findIndex((item) => item.id === over.id);
+      
+      const newItems = arrayMove(items, oldIndex, newIndex);
+      setItems(newItems);
+      
+      // Save to backend
+      try {
+        await axios.put(`${API_URL}/api/items/reorder`, {
+          orderedIds: newItems.map(item => item.id)
+        }, getAxiosConfig());
+      } catch (error) {
+        console.error('Failed to save new order:', error);
+      }
+    }
+  };
+
   return (
     <div className="container">
       <header>
@@ -110,58 +164,71 @@ function App() {
         </div>
       ) : (
         <div className="portfolio-grid">
-          {items.map(item => (
-            <div className="portfolio-card" key={item.id}>
-              <img 
-                src={item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`} 
-                alt={item.title} 
-                className="card-image" 
-                onError={(e) => { e.target.src = 'https://via.placeholder.com/400x220?text=Image+Not+Found' }}
-              />
-              <div className="card-content">
-                {editingId === item.id ? (
-                  <div className="edit-form">
-                    <input 
-                      type="text" 
-                      className="form-control" 
-                      style={{ marginBottom: '1rem', fontSize: '1.2rem', fontWeight: 'bold' }}
-                      value={editTitle}
-                      onChange={(e) => setEditTitle(e.target.value)} 
+          <DndContext 
+            sensors={sensors}
+            collisionDetection={closestCenter}
+            onDragEnd={handleDragEnd}
+          >
+            <SortableContext 
+              items={items.map(item => item.id)}
+              strategy={rectSortingStrategy}
+            >
+              {items.map(item => (
+                <SortableItem key={item.id} id={item.id} disabled={!token || item.author_username !== currentUsername || editingId === item.id}>
+                  <div className="portfolio-card">
+                    <img 
+                      src={item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`} 
+                      alt={item.title} 
+                      className="card-image" 
+                      onError={(e) => { e.target.src = 'https://via.placeholder.com/400x220?text=Image+Not+Found' }}
                     />
-                    <textarea 
-                      className="form-control" 
-                      rows="6" 
-                      style={{ marginBottom: '1rem', flexGrow: 1 }}
-                      value={editDescription}
-                      onChange={(e) => setEditDescription(e.target.value)}
-                    ></textarea>
-                    <div className="card-actions">
-                      <button className="btn-edit" onClick={() => saveEdit(item.id)}>Save</button>
-                      <button className="btn-cancel" onClick={() => setEditingId(null)}>Cancel</button>
+                    <div className="card-content">
+                      {editingId === item.id ? (
+                        <div className="edit-form">
+                          <input 
+                            type="text" 
+                            className="form-control" 
+                            style={{ marginBottom: '1rem', fontSize: '1.2rem', fontWeight: 'bold' }}
+                            value={editTitle}
+                            onChange={(e) => setEditTitle(e.target.value)} 
+                          />
+                          <textarea 
+                            className="form-control" 
+                            rows="6" 
+                            style={{ marginBottom: '1rem', flexGrow: 1 }}
+                            value={editDescription}
+                            onChange={(e) => setEditDescription(e.target.value)}
+                          ></textarea>
+                          <div className="card-actions">
+                            <button className="btn-edit" onClick={() => saveEdit(item.id)}>Save</button>
+                            <button className="btn-cancel" onClick={() => setEditingId(null)}>Cancel</button>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <h3 className="card-title">{item.title}</h3>
+                          {item.description && <p className="card-desc">{item.description}</p>}
+                          
+                          {item.author_username && (
+                            <p style={{ fontSize: '0.85rem', color: 'var(--secondary-color)', marginBottom: '1rem', fontStyle: 'italic' }}>
+                              Added by: {item.author_username}
+                            </p>
+                          )}
+                          
+                          {token && item.author_username === currentUsername && (
+                            <div className="card-actions">
+                              <button className="btn-edit" onClick={() => startEdit(item)}>Edit</button>
+                              <button className="btn-delete" onClick={() => handleDelete(item.id)}>Delete</button>
+                            </div>
+                          )}
+                        </>
+                      )}
                     </div>
                   </div>
-                ) : (
-                  <>
-                    <h3 className="card-title">{item.title}</h3>
-                    {item.description && <p className="card-desc">{item.description}</p>}
-                    
-                    {item.author_username && (
-                      <p style={{ fontSize: '0.85rem', color: 'var(--secondary-color)', marginBottom: '1rem', fontStyle: 'italic' }}>
-                        Added by: {item.author_username}
-                      </p>
-                    )}
-                    
-                    {token && item.author_username === currentUsername && (
-                      <div className="card-actions">
-                        <button className="btn-edit" onClick={() => startEdit(item)}>Edit</button>
-                        <button className="btn-delete" onClick={() => handleDelete(item.id)}>Delete</button>
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
-            </div>
-          ))}
+                </SortableItem>
+              ))}
+            </SortableContext>
+          </DndContext>
         </div>
       )}
 
