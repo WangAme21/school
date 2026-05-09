@@ -72,7 +72,7 @@ app.get('/api/items', async (req, res) => {
       SELECT items.*, users.username as author_username 
       FROM items 
       LEFT JOIN users ON items.user_id = users.id 
-      ORDER BY items.created_at DESC
+      ORDER BY items.id ASC
     `);
     res.json(rows);
   } catch (err) {

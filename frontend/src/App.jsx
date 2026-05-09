@@ -176,7 +176,7 @@ function App() {
         <UploadModal 
           token={token}
           onClose={() => setIsModalOpen(false)} 
-          onUploadSuccess={(newItem) => setItems([newItem, ...items])}
+          onUploadSuccess={(newItem) => setItems([...items, newItem])}
         />
       )}
     </div>
