@@ -72,7 +72,7 @@ app.get('/api/items', async (req, res) => {
       SELECT items.*, users.username as author_username 
       FROM items 
       LEFT JOIN users ON items.user_id = users.id 
-      ORDER BY items.id ASC
+      ORDER BY items.sort_order ASC, items.id ASC
     `);
     res.json(rows);
   } catch (err) {
@@ -93,9 +93,12 @@ app.post('/api/items', authenticateToken, upload.single('image'), async (req, re
       return res.status(400).json({ error: 'Title and image are required' });
     }
 
+    const [[{ maxOrder }]] = await db.query('SELECT MAX(sort_order) as maxOrder FROM items');
+    const newSortOrder = (maxOrder || 0) + 1;
+
     const [result] = await db.query(
-      'INSERT INTO items (title, description, image_url, user_id) VALUES (?, ?, ?, ?)',
-      [title, description, image_url, req.user.id]
+      'INSERT INTO items (title, description, image_url, user_id, sort_order) VALUES (?, ?, ?, ?, ?)',
+      [title, description, image_url, req.user.id, newSortOrder]
     );
 
     const newItem = {
@@ -110,6 +113,26 @@ app.post('/api/items', authenticateToken, upload.single('image'), async (req, re
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Failed to create item' });
+  }
+});
+
+app.put('/api/items/reorder', authenticateToken, async (req, res) => {
+  try {
+    const { orderedIds } = req.body;
+    if (!Array.isArray(orderedIds)) {
+      return res.status(400).json({ error: 'orderedIds must be an array' });
+    }
+
+    // Update each item's sort_order based on its position in the array
+    const promises = orderedIds.map((id, index) => {
+      return db.query('UPDATE items SET sort_order = ? WHERE id = ?', [index + 1, id]);
+    });
+
+    await Promise.all(promises);
+    res.json({ message: 'Order updated successfully' });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Failed to reorder items' });
   }
 });
 
@@ -155,6 +178,7 @@ app.delete('/api/items/:id', authenticateToken, async (req, res) => {
     res.status(500).json({ error: 'Failed to delete item' });
   }
 });
+
 
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);

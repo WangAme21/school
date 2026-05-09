@@ -22,6 +22,7 @@ async function initDB() {
         description TEXT,
         image_url VARCHAR(255) NOT NULL,
         user_id INT,
+        sort_order INT DEFAULT 0,
         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
       );
     `;
@@ -29,6 +30,14 @@ async function initDB() {
 
     try {
       await pool.query('ALTER TABLE items ADD COLUMN user_id INT');
+    } catch(e) {
+      // Ignored if column already exists
+    }
+
+    try {
+      await pool.query('ALTER TABLE items ADD COLUMN sort_order INT DEFAULT 0');
+      // Initialize sort_order with ID for existing items
+      await pool.query('UPDATE items SET sort_order = id WHERE sort_order = 0');
     } catch(e) {
       // Ignored if column already exists
     }
