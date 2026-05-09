@@ -82,7 +82,7 @@ const UploadModal = ({ onClose, onUploadSuccess, token }) => {
             />
           </div>
           
-          <button type="submit" className="btn-primary" style={{width: '100%', marginTop: '1rem'}} disabled={loading}>
+          <button type="submit" className="btn-primary" style={{width: '100%'}} disabled={loading}>
             {loading ? 'Uploading...' : 'Save Portfolio Item'}
           </button>
         </form>

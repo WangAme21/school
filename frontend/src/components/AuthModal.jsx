@@ -58,7 +58,7 @@ const AuthModal = ({ onClose, onLoginSuccess }) => {
             />
           </div>
           
-          <button type="submit" className="btn-primary" style={{width: '100%', marginTop: '1rem'}} disabled={loading}>
+          <button type="submit" className="btn-primary" style={{width: '100%'}} disabled={loading}>
             {loading ? 'Processing...' : 'Login'}
           </button>
         </form>

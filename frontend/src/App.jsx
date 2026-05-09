@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import UploadModal from './components/UploadModal';
 import AuthModal from './components/AuthModal';
+import PresentationMode from './components/PresentationMode';
 import { SortableItem } from './components/SortableItem';
 import {
   DndContext, 
@@ -25,6 +26,8 @@ function App() {
   const [items, setItems] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isPresentationMode, setIsPresentationMode] = useState(false);
+  const [currentPresentationIndex, setCurrentPresentationIndex] = useState(0);
   
   const [token, setToken] = useState(localStorage.getItem('portfolioToken') || '');
   const [currentUsername, setCurrentUsername] = useState(localStorage.getItem('portfolioUsername') || '');
@@ -141,6 +144,12 @@ function App() {
         <h1>My <span>Portfolio</span></h1>
         
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+          {items.length > 0 && (
+            <button className="btn-edit" onClick={() => setIsPresentationMode(true)}>
+              &#9654; Present
+            </button>
+          )}
+          
           {token ? (
             <>
               <span style={{ color: 'var(--text-main)' }}>Welcome, {currentUsername}</span>
@@ -199,7 +208,7 @@ function App() {
                             value={editDescription}
                             onChange={(e) => setEditDescription(e.target.value)}
                           ></textarea>
-                          <div className="card-actions">
+                          <div className="card-actions" style={{ opacity: 1 }}>
                             <button className="btn-edit" onClick={() => saveEdit(item.id)}>Save</button>
                             <button className="btn-cancel" onClick={() => setEditingId(null)}>Cancel</button>
                           </div>
@@ -210,9 +219,9 @@ function App() {
                           {item.description && <p className="card-desc">{item.description}</p>}
                           
                           {item.author_username && (
-                            <p style={{ fontSize: '0.85rem', color: 'var(--secondary-color)', marginBottom: '1rem', fontStyle: 'italic' }}>
-                              Added by: {item.author_username}
-                            </p>
+                            <span className="author-tag">
+                              By {item.author_username}
+                            </span>
                           )}
                           
                           {token && item.author_username === currentUsername && (
@@ -244,6 +253,16 @@ function App() {
           token={token}
           onClose={() => setIsModalOpen(false)} 
           onUploadSuccess={(newItem) => setItems([...items, newItem])}
+        />
+      )}
+
+      {isPresentationMode && (
+        <PresentationMode 
+          items={items}
+          currentIndex={currentPresentationIndex}
+          setCurrentIndex={setCurrentPresentationIndex}
+          onClose={() => setIsPresentationMode(false)}
+          apiUrl={API_URL}
         />
       )}
     </div>
