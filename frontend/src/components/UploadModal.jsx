@@ -64,11 +64,33 @@ const UploadModal = ({ onClose, onUploadSuccess, token }) => {
           </div>
           
           <div className="form-group">
-            <label>Context / Description (Discussion)</label>
+            <label style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              Context / Description (Discussion)
+              <div style={{ display: 'flex', gap: '0.5rem' }}>
+                <button 
+                  type="button" 
+                  onClick={() => setDescription(prev => prev + (prev.length ? '\n' : '') + '• ')}
+                  className="btn-edit" 
+                  style={{ padding: '2px 8px', fontSize: '0.7rem', width: 'auto' }}
+                >+ Bullet</button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    const lines = description.split('\n');
+                    const lastLine = lines[lines.length - 1];
+                    const match = lastLine.match(/^(\d+)\./);
+                    const nextNum = match ? parseInt(match[1]) + 1 : 1;
+                    setDescription(prev => prev + (prev.length ? '\n' : '') + `${nextNum}. `);
+                  }}
+                  className="btn-edit" 
+                  style={{ padding: '2px 8px', fontSize: '0.7rem', width: 'auto' }}
+                >+ Number</button>
+              </div>
+            </label>
             <textarea 
               className="form-control" 
               rows="8" 
-              placeholder="Type your discussion or context here. You can make it as long as you want..."
+              placeholder="Type your discussion or context here. Use the buttons above for lists..."
               value={description}
               onChange={e => setDescription(e.target.value)}
             ></textarea>

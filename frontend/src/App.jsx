@@ -229,6 +229,27 @@ function App() {
                             value={editTitle}
                             onChange={(e) => setEditTitle(e.target.value)}
                           />
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
+                            <label style={{ fontSize: '0.8rem', opacity: 0.7 }}>Description</label>
+                            <div style={{ display: 'flex', gap: '0.4rem' }}>
+                              <button 
+                                type="button" 
+                                onClick={() => setEditDescription(prev => prev + (prev.length ? '\n' : '') + '• ')}
+                                style={{ padding: '2px 6px', fontSize: '0.65rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', color: 'var(--text-light)', borderRadius: '4px', cursor: 'pointer' }}
+                              >+ Bullet</button>
+                              <button 
+                                type="button" 
+                                onClick={() => {
+                                  const lines = editDescription.split('\n');
+                                  const lastLine = lines[lines.length - 1];
+                                  const match = lastLine.match(/^(\d+)\./);
+                                  const nextNum = match ? parseInt(match[1]) + 1 : 1;
+                                  setEditDescription(prev => prev + (prev.length ? '\n' : '') + `${nextNum}. `);
+                                }}
+                                style={{ padding: '2px 6px', fontSize: '0.65rem', background: 'rgba(255,255,255,0.05)', border: '1px solid var(--border-color)', color: 'var(--text-light)', borderRadius: '4px', cursor: 'pointer' }}
+                              >+ Number</button>
+                            </div>
+                          </div>
                           <textarea
                             className="form-control"
                             rows="6"

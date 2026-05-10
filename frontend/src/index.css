@@ -233,6 +233,7 @@ body.light-mode .btn-logout {
   color: var(--text-main);
   line-height: 1.6;
   margin-bottom: 1.5rem;
+  white-space: pre-wrap; /* Preserve line breaks */
 }
 
 .author-tag {
@@ -553,6 +554,7 @@ body.light-mode .presentation-nav {
   color: var(--pres-sub);
   max-width: 900px;
   line-height: 1.6;
+  white-space: pre-wrap; /* Preserve line breaks */
 }
 
 .presentation-counter {
