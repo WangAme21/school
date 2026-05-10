@@ -209,11 +209,44 @@ body.light-mode .btn-logout {
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
-.card-image {
-  width: 100%;
+.card-image-container {
   height: 260px;
+  width: 100%;
+  display: grid;
+  gap: 2px;
+  overflow: hidden;
+  position: relative;
+  background: #111;
+}
+
+.card-image-preview {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  background: rgba(0, 0, 0, 0.05);
+  transition: transform 0.5s ease;
+}
+
+.portfolio-card:hover .card-image-preview {
+  transform: scale(1.05);
+}
+
+/* Grid logic based on count */
+.img-count-1 { grid-template-columns: 1fr; }
+.img-count-2 { grid-template-columns: 1fr 1fr; }
+.img-count-3, .img-count-4, .img-count-5, .img-count-6, .img-count-7, .img-count-8, .img-count-9, .img-count-10 { 
+  grid-template-columns: repeat(3, 1fr); 
+}
+
+.image-more-overlay {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.7);
+  color: white;
+  padding: 4px 8px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  border-top-left-radius: 8px;
 }
 
 .card-content {
@@ -591,12 +624,6 @@ body.light-mode .presentation-nav {
   /* Preserve line breaks */
 }
 
-.presentation-counter {
-  margin-top: 1rem;
-  font-weight: 800;
-  color: var(--pres-acc);
-}
-
 /* Theme Picker UI */
 .theme-picker {
   position: absolute;
@@ -629,6 +656,141 @@ body.light-mode .presentation-nav {
   border-color: white;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
 }
+
+.presentation-counter {
+  margin-top: 1rem;
+  font-weight: 800;
+  color: var(--pres-acc);
+}
+
+/* Theme Overlays */
+.theme-midnight { background: radial-gradient(circle at center, #111, #050505); }
+.theme-solar { background: #fdf6e3; --pres-text: #586e75; --pres-sub: #657b83; --pres-acc: #268bd2; }
+.theme-neon { background: #0a0a0a; --pres-text: #ff00ff; --pres-sub: #00ffff; --pres-acc: #ffff00; }
+.theme-forest { background: linear-gradient(135deg, #0a1f1a, #050d0a); --pres-acc: #4ade80; }
+.theme-deepsea { background: linear-gradient(180deg, #005f73, #0a1f1a); --pres-acc: #94d2bd; }
+
+/* New Premium Themes */
+.theme-gallery { 
+  background: #f8f8f8; 
+  --pres-text: #1a1a1a; 
+  --pres-sub: #4a4a4a; 
+  --pres-acc: #000; 
+}
+.theme-cyber { 
+  background: #0f0c29; 
+  background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
+  --pres-text: #00f2fe;
+  --pres-sub: #4facfe;
+  --pres-acc: #ff00ff;
+}
+.theme-retro { 
+  background: #f4ebd0; 
+  --pres-text: #5d4037; 
+  --pres-sub: #8d6e63; 
+  --pres-acc: #3e2723;
+  background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+}
+
+/* Framing System */
+.presentation-frame {
+  padding: 20px;
+  background: transparent;
+  transition: all 0.5s ease;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+}
+
+.theme-gallery .presentation-frame {
+  background: white;
+  border: 15px solid #000;
+  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+}
+
+.theme-cyber .presentation-frame {
+  border: 2px solid var(--pres-text);
+  box-shadow: 0 0 20px var(--pres-text), inset 0 0 10px var(--pres-text);
+  position: relative;
+}
+
+.theme-retro .presentation-frame {
+  background: white;
+  padding: 15px 15px 60px 15px; /* Polaroid style */
+  box-shadow: 5px 10px 20px rgba(0,0,0,0.1);
+  transform: rotate(-1deg);
+}
+
+.theme-neon .presentation-frame {
+  border: 4px solid var(--pres-text);
+  box-shadow: 0 0 30px var(--pres-text);
+}
+
+.theme-midnight .presentation-frame {
+  border-radius: 20px;
+  background: rgba(255,255,255,0.03);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.1);
+}
+
+.theme-select {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: var(--text-light);
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-family: 'Outfit', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  outline: none;
+  transition: all 0.3s;
+  backdrop-filter: blur(10px);
+}
+
+.theme-select:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--primary-color);
+}
+
+.theme-select option {
+  background: #1a1a1a;
+  color: white;
+}
+
+.ornate-corner {
+  position: absolute;
+  width: 100px;
+  height: 100px;
+  pointer-events: none;
+  z-index: 3500;
+  transition: all 0.5s ease;
+}
+
+.ornate-corner::before,
+.ornate-corner::after {
+  content: '';
+  position: absolute;
+  background: var(--pres-acc);
+  opacity: 0.8;
+}
+
+/* Ornate Flourish Design */
+.ornate-corner.tl { top: 20px; left: 20px; border-top: 4px solid var(--pres-acc); border-left: 4px solid var(--pres-acc); border-top-left-radius: 20px; }
+.ornate-corner.tr { top: 20px; right: 20px; border-top: 4px solid var(--pres-acc); border-right: 4px solid var(--pres-acc); border-top-right-radius: 20px; }
+.ornate-corner.bl { bottom: 20px; left: 20px; border-bottom: 4px solid var(--pres-acc); border-left: 4px solid var(--pres-acc); border-bottom-left-radius: 20px; }
+.ornate-corner.br { bottom: 20px; right: 20px; border-bottom: 4px solid var(--pres-acc); border-right: 4px solid var(--pres-acc); border-bottom-right-radius: 20px; }
+
+/* Flourish details */
+.ornate-corner.tl::after { width: 15px; height: 15px; border-radius: 50%; top: -10px; left: -10px; box-shadow: 30px 0 0 var(--pres-acc), 0 30px 0 var(--pres-acc); }
+.ornate-corner.tr::after { width: 15px; height: 15px; border-radius: 50%; top: -10px; right: -10px; box-shadow: -30px 0 0 var(--pres-acc), 0 30px 0 var(--pres-acc); }
+.ornate-corner.bl::after { width: 15px; height: 15px; border-radius: 50%; bottom: -10px; left: -10px; box-shadow: 30px 0 0 var(--pres-acc), 0 -30px 0 var(--pres-acc); }
+.ornate-corner.br::after { width: 15px; height: 15px; border-radius: 50%; bottom: -10px; right: -10px; box-shadow: -30px 0 0 var(--pres-acc), 0 -30px 0 var(--pres-acc); }
+
+.theme-gallery .ornate-corner { border-width: 8px; border-color: #000; }
+.theme-retro .ornate-corner { border-color: #d4af37; border-width: 5px; } /* Gold */
+.theme-cyber .ornate-corner { border-color: #00f2fe; border-width: 2px; box-shadow: 0 0 15px #00f2fe; }
 
 /* Responsive */
 @media (max-width: 900px) {

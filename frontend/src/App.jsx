@@ -39,6 +39,23 @@ function App() {
   const [editDescription, setEditDescription] = useState('');
   const [editImages, setEditImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
+  const [presentationTheme, setPresentationTheme] = useState(localStorage.getItem('presentationTheme') || 'midnight');
+
+  const updateTheme = (newTheme) => {
+    setPresentationTheme(newTheme);
+    localStorage.setItem('presentationTheme', newTheme);
+  };
+
+  const themes = [
+    { id: 'midnight', color: '#050505', name: 'Midnight' },
+    { id: 'solar', color: '#fdf6e3', name: 'Solar' },
+    { id: 'neon', color: '#ff00ff', name: 'Neon' },
+    { id: 'forest', color: '#0a1f1a', name: 'Forest' },
+    { id: 'deepsea', color: '#005f73', name: 'Deep Sea' },
+    { id: 'gallery', color: '#ffffff', name: 'Art Gallery' },
+    { id: 'cyber', color: '#0f0c29', name: 'Cyberpunk' },
+    { id: 'retro', color: '#f4ebd0', name: 'Retro Paper' },
+  ];
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -178,6 +195,19 @@ function App() {
             {isLightMode ? '🌙' : '☀️'}
           </button>
 
+          <div className="main-theme-picker" style={{ marginRight: '1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: '600', opacity: 0.8 }}>Exhibit Style:</span>
+            <select 
+              value={presentationTheme} 
+              onChange={(e) => updateTheme(e.target.value)}
+              className="theme-select"
+            >
+              {themes.map(t => (
+                <option key={t.id} value={t.id}>{t.name}</option>
+              ))}
+            </select>
+          </div>
+
           {items.length > 0 && (
             <button className="btn-edit" onClick={() => setIsPresentationMode(true)}>
               &#9654; Present
@@ -220,12 +250,20 @@ function App() {
                 <SortableItem key={item.id} id={item.id} disabled={!token || item.author_username !== currentUsername || editingId === item.id}>
                   <div className="portfolio-card">
                     {item.image_url && (
-                      <img
-                        src={item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`}
-                        alt={item.title}
-                        className="card-image"
-                        onError={(e) => { e.target.style.display = 'none' }}
-                      />
+                      <div className={`card-image-container img-count-${item.image_url.split(',').length}`}>
+                        {item.image_url.split(',').slice(0, 3).map((url, idx) => (
+                          <img
+                            key={idx}
+                            src={url.startsWith('http') ? url : `${API_URL}${url}`}
+                            alt={item.title || 'Portfolio Item'}
+                            className="card-image-preview"
+                            onError={(e) => { e.target.style.display = 'none' }}
+                          />
+                        ))}
+                        {item.image_url.split(',').length > 3 && (
+                          <div className="image-more-overlay">+{item.image_url.split(',').length - 3}</div>
+                        )}
+                      </div>
                     )}
                     <div className="card-content">
                       {editingId === item.id ? (
@@ -364,6 +402,8 @@ function App() {
           setCurrentIndex={setCurrentPresentationIndex}
           onClose={() => setIsPresentationMode(false)}
           apiUrl={API_URL}
+          theme={presentationTheme}
+          setTheme={updateTheme}
         />
       )}
     </div>

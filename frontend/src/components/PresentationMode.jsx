@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
-const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUrl }) => {
-  const [theme, setTheme] = useState('midnight');
-
+const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUrl, theme, setTheme }) => {
   const themes = [
     { id: 'midnight', color: '#050505', name: 'Midnight' },
     { id: 'solar', color: '#fdf6e3', name: 'Solar' },
     { id: 'neon', color: '#ff00ff', name: 'Neon' },
     { id: 'forest', color: '#0a1f1a', name: 'Forest' },
     { id: 'deepsea', color: '#005f73', name: 'Deep Sea' },
+    { id: 'gallery', color: '#ffffff', name: 'Art Gallery' },
+    { id: 'cyber', color: '#0f0c29', name: 'Cyberpunk' },
+    { id: 'retro', color: '#f4ebd0', name: 'Retro Paper' },
   ];
 
   useEffect(() => {
@@ -29,9 +30,16 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
   if (!items.length) return null;
 
   const currentItem = items[currentIndex];
+  const isImageOnly = !currentItem.title && !currentItem.description;
 
   return (
     <div className={`presentation-overlay theme-${theme}`}>
+      {/* Ornate Corners */}
+      <div className="ornate-corner tl"></div>
+      <div className="ornate-corner tr"></div>
+      <div className="ornate-corner bl"></div>
+      <div className="ornate-corner br"></div>
+
       <div className="theme-picker">
         {themes.map((t) => (
           <div
@@ -53,28 +61,30 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
           &#8249;
         </button>
 
-        <div className="presentation-main">
-           {currentItem.image_url ? (
-            <div
-              className={`presentation-image-wrapper ${currentItem.image_url.split(',').length > 1 ? 'multi-image-grid' : ''}`}
-              onClick={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect();
-                const x = e.clientX - rect.left;
-                if (x < rect.width / 2) {
-                  setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
-                } else {
-                  setCurrentIndex((prev) => (prev + 1) % items.length);
-                }
-              }}
-            >
-              {currentItem.image_url.split(',').map((url, idx) => (
-                <img
-                  key={idx}
-                  src={url.startsWith('http') ? url : `${apiUrl}${url}`}
-                  alt={`${currentItem.title || 'Image'} ${idx + 1}`}
-                  className="presentation-image"
-                />
-              ))}
+        <div className={`presentation-main ${isImageOnly ? 'full-screen' : ''}`}>
+          {currentItem.image_url ? (
+            <div className="presentation-frame">
+              <div
+                className={`presentation-image-wrapper ${currentItem.image_url.split(',').length > 1 ? 'multi-image-grid' : ''}`}
+                onClick={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  const x = e.clientX - rect.left;
+                  if (x < rect.width / 2) {
+                    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+                  } else {
+                    setCurrentIndex((prev) => (prev + 1) % items.length);
+                  }
+                }}
+              >
+                {currentItem.image_url.split(',').map((url, idx) => (
+                  <img
+                    key={idx}
+                    src={url.startsWith('http') ? url : `${apiUrl}${url}`}
+                    alt={`${currentItem.title || 'Image'} ${idx + 1}`}
+                    className="presentation-image"
+                  />
+                ))}
+              </div>
             </div>
           ) : (
             <div
@@ -89,11 +99,10 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
                 }
               }}
             >
-              {/* Optional: Add a placeholder icon or just leave empty to center text */}
             </div>
           )}
-          <div className="presentation-info">
-            <h2>{currentItem.title}</h2>
+          <div className={`presentation-info ${isImageOnly ? 'hidden' : ''}`}>
+            {currentItem.title && <h2>{currentItem.title}</h2>}
             {currentItem.description && <p>{currentItem.description}</p>}
             <div className="presentation-counter">
               {currentIndex + 1} / {items.length}
