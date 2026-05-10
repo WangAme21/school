@@ -3,7 +3,7 @@
 :root {
   /* Default Dark Mode Tokens */
   --bg-color: #050505;
-  --panel-bg: rgba(20, 20, 22, 0.7);
+  --panel-bg: rgba(40, 40, 45, 0.85); /* Slightly lighter for better visibility */
   --border-color: rgba(255, 255, 255, 0.08);
   --primary-color: #00f2ff;
   --primary-glow: rgba(0, 242, 255, 0.3);
@@ -69,7 +69,8 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 1rem 2rem;
+  padding: 1.2rem 5%; /* Increased horizontal padding and consistent width */
+  width: 100%;
   background: var(--bg-color);
   backdrop-filter: blur(15px);
   border-bottom: 1px solid var(--border-color);
@@ -201,12 +202,21 @@ body.light-mode .btn-logout {
   flex-direction: column;
   transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* Subtle dark mode shadow */
+}
+
+body.light-mode .portfolio-card {
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08); /* Soft light mode shadow */
 }
 
 .portfolio-card:hover {
   transform: translateY(-10px);
   border-color: var(--primary-color);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); /* Stronger hover shadow */
+}
+
+body.light-mode .portfolio-card:hover {
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15); /* Soft hover shadow for light mode */
 }
 
 .card-image-container {
@@ -824,7 +834,85 @@ body.light-mode .presentation-nav {
 .ornate-corner.bl { bottom: 30px; left: 30px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 10px; }
 .ornate-corner.br { bottom: 30px; right: 30px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 10px 0; }
 
+/* Fullscreen Zoom Focus */
+.fullscreen-zoom-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 5000;
+  cursor: zoom-out;
+  animation: fadeIn 0.3s ease;
+}
+
+.zoomed-image-focused {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  box-shadow: 0 0 50px rgba(0,0,0,0.5);
+  animation: zoomIn 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+  border-radius: 4px;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes zoomIn {
+  from { transform: scale(0.9); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
 /* Responsive */
+.zoomed-mode .presentation-main {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.zoomed-mode .presentation-frame {
+  width: 95vw;
+  height: 95vh;
+  padding: 0;
+  border-width: 2px;
+}
+
+.zoomed-mode .presentation-image-wrapper {
+  height: 100%;
+  max-height: none;
+}
+
+.zoom-hint {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.5);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 100px;
+  font-size: 0.8rem;
+  pointer-events: none;
+  z-index: 4000;
+  animation: fadeOut 3s forwards;
+}
+
+@keyframes fadeOut {
+  0% { opacity: 1; }
+  70% { opacity: 1; }
+  100% { opacity: 0; }
+}
+
 @media (max-width: 900px) {
   .presentation-nav {
     min-width: 70px;

@@ -182,7 +182,7 @@ function App() {
   };
 
   return (
-    <div className="container">
+    <>
       <header>
         <h1>My <span>Portfolio</span></h1>
 
@@ -229,6 +229,8 @@ function App() {
           )}
         </div>
       </header>
+
+      <div className="container">
 
       {items.length === 0 ? (
         <div style={{ textAlign: 'center', marginTop: '4rem', color: 'var(--text-main)' }}>
@@ -407,6 +409,7 @@ function App() {
         />
       )}
     </div>
+    </>
   );
 }
 
