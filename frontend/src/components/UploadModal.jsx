@@ -11,15 +11,17 @@ const UploadModal = ({ onClose, onUploadSuccess, token }) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title || !image) {
-      alert("Please provide both a title and an image.");
+    if (!title) {
+      alert("Please provide a title.");
       return;
     }
 
     const formData = new FormData();
     formData.append('title', title);
     formData.append('description', description);
-    formData.append('image', image);
+    if (image) {
+      formData.append('image', image);
+    }
 
     setLoading(true);
     try {
@@ -33,7 +35,8 @@ const UploadModal = ({ onClose, onUploadSuccess, token }) => {
       onClose();
     } catch (error) {
       console.error(error);
-      alert("Failed to upload. Make sure the backend server and MySQL database are running!");
+      const message = error.response?.data?.error || "Failed to upload. Make sure the backend server and MySQL database are running!";
+      alert(message);
     } finally {
       setLoading(false);
     }
@@ -72,13 +75,12 @@ const UploadModal = ({ onClose, onUploadSuccess, token }) => {
           </div>
           
           <div className="form-group">
-            <label>Upload Picture <span style={{color: 'var(--primary-color)'}}>*</span></label>
+            <label>Upload Picture</label>
             <input 
               type="file" 
               accept="image/*"
               className="form-control-file" 
               onChange={e => setImage(e.target.files[0])}
-              required
             />
           </div>
           

@@ -33,24 +33,41 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
         </button>
 
         <div className="presentation-main">
-          <div 
-            className="presentation-image-wrapper"
-            onClick={(e) => {
-              const rect = e.currentTarget.getBoundingClientRect();
-              const x = e.clientX - rect.left;
-              if (x < rect.width / 2) {
-                setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
-              } else {
-                setCurrentIndex((prev) => (prev + 1) % items.length);
-              }
-            }}
-          >
-            <img 
-              src={currentItem.image_url.startsWith('http') ? currentItem.image_url : `${apiUrl}${currentItem.image_url}`} 
-              alt={currentItem.title} 
-              className="presentation-image"
-            />
-          </div>
+          {currentItem.image_url ? (
+            <div 
+              className="presentation-image-wrapper"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                if (x < rect.width / 2) {
+                  setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+                } else {
+                  setCurrentIndex((prev) => (prev + 1) % items.length);
+                }
+              }}
+            >
+              <img 
+                src={currentItem.image_url.startsWith('http') ? currentItem.image_url : `${apiUrl}${currentItem.image_url}`} 
+                alt={currentItem.title} 
+                className="presentation-image"
+              />
+            </div>
+          ) : (
+            <div 
+              className="presentation-image-wrapper no-image"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                if (x < rect.width / 2) {
+                  setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+                } else {
+                  setCurrentIndex((prev) => (prev + 1) % items.length);
+                }
+              }}
+            >
+              {/* Optional: Add a placeholder icon or just leave empty to center text */}
+            </div>
+          )}
           <div className="presentation-info">
             <h2>{currentItem.title}</h2>
             {currentItem.description && <p>{currentItem.description}</p>}

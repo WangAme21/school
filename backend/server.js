@@ -89,8 +89,8 @@ app.post('/api/items', authenticateToken, upload.single('image'), async (req, re
       image_url = req.file.path;
     }
 
-    if (!title || !image_url) {
-      return res.status(400).json({ error: 'Title and image are required' });
+    if (!title) {
+      return res.status(400).json({ error: 'Title is required' });
     }
 
     const [[{ maxOrder }]] = await db.query('SELECT MAX(sort_order) as maxOrder FROM items');

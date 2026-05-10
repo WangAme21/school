@@ -5,7 +5,7 @@ import AuthModal from './components/AuthModal';
 import PresentationMode from './components/PresentationMode';
 import { SortableItem } from './components/SortableItem';
 import {
-  DndContext, 
+  DndContext,
   closestCenter,
   KeyboardSensor,
   PointerSensor,
@@ -28,7 +28,8 @@ function App() {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isPresentationMode, setIsPresentationMode] = useState(false);
   const [currentPresentationIndex, setCurrentPresentationIndex] = useState(0);
-  
+  const [isLightMode, setIsLightMode] = useState(localStorage.getItem('portfolioTheme') === 'light');
+
   const [token, setToken] = useState(localStorage.getItem('portfolioToken') || '');
   const [currentUsername, setCurrentUsername] = useState(localStorage.getItem('portfolioUsername') || '');
 
@@ -57,6 +58,16 @@ function App() {
   useEffect(() => {
     fetchItems();
   }, []);
+
+  useEffect(() => {
+    if (isLightMode) {
+      document.body.classList.add('light-mode');
+      localStorage.setItem('portfolioTheme', 'light');
+    } else {
+      document.body.classList.remove('light-mode');
+      localStorage.setItem('portfolioTheme', 'dark');
+    }
+  }, [isLightMode]);
 
   const fetchItems = async () => {
     try {
@@ -87,7 +98,7 @@ function App() {
 
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this item?')) return;
-    
+
     try {
       await axios.delete(`${API_URL}/api/items/${id}`, getAxiosConfig());
       setItems(items.filter(item => item.id !== id));
@@ -119,14 +130,14 @@ function App() {
 
   const handleDragEnd = async (event) => {
     const { active, over } = event;
-    
+
     if (active.id !== over.id) {
       const oldIndex = items.findIndex((item) => item.id === active.id);
       const newIndex = items.findIndex((item) => item.id === over.id);
-      
+
       const newItems = arrayMove(items, oldIndex, newIndex);
       setItems(newItems);
-      
+
       // Save to backend
       try {
         await axios.put(`${API_URL}/api/items/reorder`, {
@@ -142,21 +153,29 @@ function App() {
     <div className="container">
       <header>
         <h1>My <span>Portfolio</span></h1>
-        
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
+
+        <div className="header-actions">
+          <button
+            className="theme-toggle"
+            onClick={() => setIsLightMode(!isLightMode)}
+            title="Toggle Light/Dark Mode"
+          >
+            {isLightMode ? '🌙' : '☀️'}
+          </button>
+
           {items.length > 0 && (
             <button className="btn-edit" onClick={() => setIsPresentationMode(true)}>
               &#9654; Present
             </button>
           )}
-          
+
           {token ? (
             <>
               <span style={{ color: 'var(--text-main)' }}>Welcome, {currentUsername}</span>
               <button className="btn-primary" onClick={() => setIsModalOpen(true)}>
                 + Add New Item
               </button>
-              <button className="btn-cancel" onClick={handleLogout}>Logout</button>
+              <button className="btn-logout" onClick={handleLogout}>Logout</button>
             </>
           ) : (
             <button className="btn-primary" onClick={() => setIsAuthModalOpen(true)}>
@@ -173,37 +192,39 @@ function App() {
         </div>
       ) : (
         <div className="portfolio-grid">
-          <DndContext 
+          <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            <SortableContext 
+            <SortableContext
               items={items.map(item => item.id)}
               strategy={rectSortingStrategy}
             >
               {items.map(item => (
                 <SortableItem key={item.id} id={item.id} disabled={!token || item.author_username !== currentUsername || editingId === item.id}>
                   <div className="portfolio-card">
-                    <img 
-                      src={item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`} 
-                      alt={item.title} 
-                      className="card-image" 
-                      onError={(e) => { e.target.src = 'https://via.placeholder.com/400x220?text=Image+Not+Found' }}
-                    />
+                    {item.image_url && (
+                      <img
+                        src={item.image_url.startsWith('http') ? item.image_url : `${API_URL}${item.image_url}`}
+                        alt={item.title}
+                        className="card-image"
+                        onError={(e) => { e.target.style.display = 'none' }}
+                      />
+                    )}
                     <div className="card-content">
                       {editingId === item.id ? (
                         <div className="edit-form">
-                          <input 
-                            type="text" 
-                            className="form-control" 
+                          <input
+                            type="text"
+                            className="form-control"
                             style={{ marginBottom: '1rem', fontSize: '1.2rem', fontWeight: 'bold' }}
                             value={editTitle}
-                            onChange={(e) => setEditTitle(e.target.value)} 
+                            onChange={(e) => setEditTitle(e.target.value)}
                           />
-                          <textarea 
-                            className="form-control" 
-                            rows="6" 
+                          <textarea
+                            className="form-control"
+                            rows="6"
                             style={{ marginBottom: '1rem', flexGrow: 1 }}
                             value={editDescription}
                             onChange={(e) => setEditDescription(e.target.value)}
@@ -217,13 +238,13 @@ function App() {
                         <>
                           <h3 className="card-title">{item.title}</h3>
                           {item.description && <p className="card-desc">{item.description}</p>}
-                          
+
                           {item.author_username && (
                             <span className="author-tag">
                               By {item.author_username}
                             </span>
                           )}
-                          
+
                           {token && item.author_username === currentUsername && (
                             <div className="card-actions">
                               <button className="btn-edit" onClick={() => startEdit(item)}>Edit</button>
@@ -242,22 +263,22 @@ function App() {
       )}
 
       {isAuthModalOpen && (
-        <AuthModal 
-          onClose={() => setIsAuthModalOpen(false)} 
+        <AuthModal
+          onClose={() => setIsAuthModalOpen(false)}
           onLoginSuccess={handleLoginSuccess}
         />
       )}
 
       {isModalOpen && (
-        <UploadModal 
+        <UploadModal
           token={token}
-          onClose={() => setIsModalOpen(false)} 
+          onClose={() => setIsModalOpen(false)}
           onUploadSuccess={(newItem) => setItems([...items, newItem])}
         />
       )}
 
       {isPresentationMode && (
-        <PresentationMode 
+        <PresentationMode
           items={items}
           currentIndex={currentPresentationIndex}
           setCurrentIndex={setCurrentPresentationIndex}
