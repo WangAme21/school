@@ -554,7 +554,7 @@ body.light-mode .presentation-close {
   justify-content: flex-start; /* Align to top to prevent clipping */
   gap: 2rem;
   z-index: 2000;
-  padding: 8vh 0 10vh 0; /* Vertical breathing room */
+  padding: 15vh 0 10vh 0; /* Increased top margin to clear UI elements */
   min-height: 100vh;
 }
 
