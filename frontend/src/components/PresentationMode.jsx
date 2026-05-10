@@ -6,11 +6,9 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
   const themes = [
     { id: 'midnight', color: '#050505', name: 'Midnight' },
     { id: 'solar', color: '#fdf6e3', name: 'Solar' },
-    { id: 'neon', color: '#ff00ff', name: 'Neon' },
     { id: 'forest', color: '#0a1f1a', name: 'Forest' },
     { id: 'deepsea', color: '#005f73', name: 'Deep Sea' },
     { id: 'gallery', color: '#ffffff', name: 'Art Gallery' },
-    { id: 'cyber', color: '#0f0c29', name: 'Cyberpunk' },
     { id: 'retro', color: '#f4ebd0', name: 'Retro Paper' },
   ];
 
