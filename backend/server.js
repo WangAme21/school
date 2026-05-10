@@ -136,7 +136,7 @@ app.put('/api/items/reorder', authenticateToken, async (req, res) => {
   }
 });
 
-app.put('/api/items/:id', authenticateToken, async (req, res) => {
+app.put('/api/items/:id', authenticateToken, upload.single('image'), async (req, res) => {
   try {
     const { id } = req.params;
     const { title, description } = req.body;
@@ -146,11 +146,15 @@ app.put('/api/items/:id', authenticateToken, async (req, res) => {
     if (existing.length === 0) {
       return res.status(403).json({ error: 'You are not authorized to edit this item or it does not exist' });
     }
+
+    let image_url = existing[0].image_url;
+    if (req.file) {
+      image_url = req.file.path;
+    }
     
-    await db.query('UPDATE items SET title = ?, description = ? WHERE id = ?', [title, description, id]);
+    await db.query('UPDATE items SET title = ?, description = ?, image_url = ? WHERE id = ?', [title, description, image_url, id]);
     
-    const [rows] = await db.query('SELECT * FROM items WHERE id = ?', [id]);
-    
+    const [rows] = await db.query('SELECT i.*, u.username as author_username FROM items i JOIN users u ON i.user_id = u.id WHERE i.id = ?', [id]);
     res.json(rows[0]);
   } catch (err) {
     console.error(err);

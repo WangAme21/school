@@ -37,6 +37,7 @@ function App() {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
+  const [editImage, setEditImage] = useState(null);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -112,16 +113,22 @@ function App() {
     setEditingId(item.id);
     setEditTitle(item.title);
     setEditDescription(item.description || '');
+    setEditImage(null);
   };
 
   const saveEdit = async (id) => {
     try {
-      const response = await axios.put(`${API_URL}/api/items/${id}`, {
-        title: editTitle,
-        description: editDescription
-      }, getAxiosConfig());
+      const formData = new FormData();
+      formData.append('title', editTitle);
+      formData.append('description', editDescription);
+      if (editImage) {
+        formData.append('image', editImage);
+      }
+
+      const response = await axios.put(`${API_URL}/api/items/${id}`, formData, getAxiosConfig());
       setItems(items.map(item => item.id === id ? response.data : item));
       setEditingId(null);
+      setEditImage(null);
     } catch (error) {
       console.error('Failed to save edit:', error);
       alert('Failed to save edit. Make sure you are authorized!');
@@ -229,6 +236,17 @@ function App() {
                             value={editDescription}
                             onChange={(e) => setEditDescription(e.target.value)}
                           ></textarea>
+                          <div className="form-group" style={{ marginBottom: '1rem' }}>
+                            <label style={{ fontSize: '0.8rem', opacity: 0.7, display: 'block', marginBottom: '0.5rem' }}>
+                              Replace Image (Optional)
+                            </label>
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={(e) => setEditImage(e.target.files[0])}
+                              style={{ width: '100%', fontSize: '0.8rem' }}
+                            />
+                          </div>
                           <div className="card-actions" style={{ opacity: 1 }}>
                             <button className="btn-edit" onClick={() => saveEdit(item.id)}>Save</button>
                             <button className="btn-cancel" onClick={() => setEditingId(null)}>Cancel</button>

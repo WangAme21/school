@@ -1,6 +1,16 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 
 const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUrl }) => {
+  const [theme, setTheme] = useState('midnight');
+
+  const themes = [
+    { id: 'midnight', color: '#050505', name: 'Midnight' },
+    { id: 'solar', color: '#fdf6e3', name: 'Solar' },
+    { id: 'neon', color: '#ff00ff', name: 'Neon' },
+    { id: 'forest', color: '#0a1f1a', name: 'Forest' },
+    { id: 'deepsea', color: '#005f73', name: 'Deep Sea' },
+  ];
+
   useEffect(() => {
     const handleKeyDown = (e) => {
       if (e.key === 'ArrowRight') {
@@ -21,7 +31,18 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
   const currentItem = items[currentIndex];
 
   return (
-    <div className="presentation-overlay">
+    <div className={`presentation-overlay theme-${theme}`}>
+      <div className="theme-picker">
+        {themes.map((t) => (
+          <div 
+            key={t.id}
+            className={`theme-swatch ${theme === t.id ? 'active' : ''}`}
+            style={{ backgroundColor: t.color }}
+            onClick={() => setTheme(t.id)}
+            title={t.name}
+          />
+        ))}
+      </div>
       <button className="presentation-close" onClick={onClose}>&times;</button>
       
       <div className="presentation-content">
