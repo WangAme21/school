@@ -465,9 +465,12 @@ body.light-mode .presentation-overlay {
 .presentation-overlay {
   background: var(--pres-bg);
   color: var(--pres-text);
-  overflow-x: hidden !important; /* Prevent horizontal scroll */
+  overflow-y: auto !important; /* Allow full page scroll if content is tall */
+  overflow-x: hidden !important;
   width: 100vw;
   height: 100vh;
+  display: flex;
+  justify-content: center;
 }
 
 .presentation-close {
@@ -544,13 +547,14 @@ body.light-mode .presentation-close {
   width: 100%;
   max-width: 90vw;
   box-sizing: border-box;
-  flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start; /* Align to top to prevent clipping */
   gap: 2rem;
   z-index: 2000;
+  padding: 8vh 0 10vh 0; /* Vertical breathing room */
+  min-height: 100vh;
 }
 
 .presentation-image-wrapper {
@@ -606,14 +610,11 @@ body.light-mode .presentation-close {
   text-align: center;
   padding: 0 2rem;
   width: 100%;
-  max-height: 40vh;
-  /* Cap text height */
+  max-height: none; /* Allow it to take space and scroll with page */
   display: flex;
   flex-direction: column;
   align-items: center;
-  overflow-y: auto;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
+  flex-shrink: 0;
 }
 
 .presentation-info::-webkit-scrollbar {
