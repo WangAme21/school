@@ -34,7 +34,7 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
     <div className={`presentation-overlay theme-${theme}`}>
       <div className="theme-picker">
         {themes.map((t) => (
-          <div 
+          <div
             key={t.id}
             className={`theme-swatch ${theme === t.id ? 'active' : ''}`}
             style={{ backgroundColor: t.color }}
@@ -44,19 +44,19 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
         ))}
       </div>
       <button className="presentation-close" onClick={onClose}>&times;</button>
-      
+
       <div className="presentation-content">
-        <button 
-          className="presentation-nav prev" 
+        <button
+          className="presentation-nav prev"
           onClick={() => setCurrentIndex((prev) => (prev - 1 + items.length) % items.length)}
         >
           &#8249;
         </button>
 
         <div className="presentation-main">
-          {currentItem.image_url ? (
-            <div 
-              className="presentation-image-wrapper"
+           {currentItem.image_url ? (
+            <div
+              className={`presentation-image-wrapper ${currentItem.image_url.split(',').length > 1 ? 'multi-image-grid' : ''}`}
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
                 const x = e.clientX - rect.left;
@@ -67,14 +67,17 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
                 }
               }}
             >
-              <img 
-                src={currentItem.image_url.startsWith('http') ? currentItem.image_url : `${apiUrl}${currentItem.image_url}`} 
-                alt={currentItem.title} 
-                className="presentation-image"
-              />
+              {currentItem.image_url.split(',').map((url, idx) => (
+                <img
+                  key={idx}
+                  src={url.startsWith('http') ? url : `${apiUrl}${url}`}
+                  alt={`${currentItem.title || 'Image'} ${idx + 1}`}
+                  className="presentation-image"
+                />
+              ))}
             </div>
           ) : (
-            <div 
+            <div
               className="presentation-image-wrapper no-image"
               onClick={(e) => {
                 const rect = e.currentTarget.getBoundingClientRect();
@@ -98,8 +101,8 @@ const PresentationMode = ({ items, currentIndex, setCurrentIndex, onClose, apiUr
           </div>
         </div>
 
-        <button 
-          className="presentation-nav next" 
+        <button
+          className="presentation-nav next"
           onClick={() => setCurrentIndex((prev) => (prev + 1) % items.length)}
         >
           &#8250;

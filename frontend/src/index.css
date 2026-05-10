@@ -45,13 +45,13 @@ body {
 }
 
 body:not(.light-mode) {
-  background-image: 
+  background-image:
     radial-gradient(circle at 0% 0%, rgba(112, 0, 255, 0.15) 0%, transparent 40%),
     radial-gradient(circle at 100% 100%, rgba(0, 242, 255, 0.1) 0%, transparent 40%);
 }
 
 body.light-mode {
-  background-image: 
+  background-image:
     radial-gradient(circle at 0% 0%, rgba(0, 136, 204, 0.05) 0%, transparent 40%),
     radial-gradient(circle at 100% 100%, rgba(85, 0, 204, 0.05) 0%, transparent 40%);
 }
@@ -139,7 +139,10 @@ header h1 span {
   box-shadow: 0 8px 25px var(--primary-glow);
 }
 
-.btn-edit, .btn-delete, .btn-cancel, .btn-logout {
+.btn-edit,
+.btn-delete,
+.btn-cancel,
+.btn-logout {
   padding: 0.6rem 1.2rem;
   border-radius: 12px;
   font-size: 0.85rem;
@@ -203,14 +206,14 @@ body.light-mode .btn-logout {
 .portfolio-card:hover {
   transform: translateY(-10px);
   border-color: var(--primary-color);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
 }
 
 .card-image {
   width: 100%;
   height: 260px;
   object-fit: cover;
-  background: rgba(0,0,0,0.05);
+  background: rgba(0, 0, 0, 0.05);
 }
 
 .card-content {
@@ -233,7 +236,8 @@ body.light-mode .btn-logout {
   color: var(--text-main);
   line-height: 1.6;
   margin-bottom: 1.5rem;
-  white-space: pre-wrap; /* Preserve line breaks */
+  white-space: pre-wrap;
+  /* Preserve line breaks */
 }
 
 .author-tag {
@@ -278,16 +282,19 @@ body.light-mode .btn-logout {
   padding: 2.5rem;
   width: 100%;
   max-width: 550px;
-  box-shadow: 0 40px 100px rgba(0,0,0,0.5);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.5);
   color: var(--text-light);
   max-height: 90vh;
   overflow-y: auto;
-  scrollbar-width: none; /* Hide scrollbar for Firefox */
-  -ms-overflow-style: none; /* Hide scrollbar for IE/Edge */
+  scrollbar-width: none;
+  /* Hide scrollbar for Firefox */
+  -ms-overflow-style: none;
+  /* Hide scrollbar for IE/Edge */
 }
 
 .modal-content::-webkit-scrollbar {
-  display: none; /* Hide scrollbar for Chrome/Safari */
+  display: none;
+  /* Hide scrollbar for Chrome/Safari */
 }
 
 .modal-header {
@@ -390,7 +397,7 @@ body.light-mode .presentation-overlay {
   --pres-text: #ffffff;
   --pres-sub: #ff00ff;
   --pres-acc: #00ff00;
-  background: 
+  background:
     radial-gradient(circle at 10% 10%, rgba(255, 0, 255, 0.1) 0%, transparent 40%),
     radial-gradient(circle at 90% 90%, rgba(0, 255, 0, 0.1) 0%, transparent 40%),
     #000;
@@ -444,7 +451,7 @@ body.light-mode .presentation-overlay {
 body.light-mode .presentation-close {
   background: white;
   color: black;
-  border-color: rgba(0,0,0,0.1);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 .presentation-content {
@@ -481,7 +488,7 @@ body.light-mode .presentation-close {
 body.light-mode .presentation-nav {
   background: white;
   color: black;
-  border-color: rgba(0,0,0,0.1);
+  border-color: rgba(0, 0, 0, 0.1);
 }
 
 .presentation-nav:hover {
@@ -501,13 +508,38 @@ body.light-mode .presentation-nav {
 }
 
 .presentation-image-wrapper {
-  height: 40vh; /* Fixed max height for image */
+  height: 40vh;
   width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-bottom: 2rem;
   flex-shrink: 0;
+  gap: 1.5rem;
+}
+
+.multi-image-grid {
+  display: grid !important;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  width: 100%;
+  max-width: 1400px;
+  gap: 1.5rem;
+}
+
+.multi-image-grid .presentation-image {
+  max-height: 40vh;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 12px;
+}
+
+.presentation-main.full-screen .multi-image-grid {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+}
+
+.presentation-main.full-screen .multi-image-grid .presentation-image {
+  max-height: 85vh;
 }
 
 .presentation-image-wrapper.no-image {
@@ -526,7 +558,8 @@ body.light-mode .presentation-nav {
   text-align: center;
   padding: 0 2rem;
   width: 100%;
-  max-height: 40vh; /* Cap text height */
+  max-height: 40vh;
+  /* Cap text height */
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -541,12 +574,12 @@ body.light-mode .presentation-nav {
 
 .presentation-info h2 {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.8rem; 
+  font-size: 2.8rem;
   color: var(--pres-text);
   margin-bottom: 1rem;
   line-height: 1.1;
   flex-shrink: 0;
-  text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
 .presentation-info p {
@@ -554,7 +587,8 @@ body.light-mode .presentation-nav {
   color: var(--pres-sub);
   max-width: 900px;
   line-height: 1.6;
-  white-space: pre-wrap; /* Preserve line breaks */
+  white-space: pre-wrap;
+  /* Preserve line breaks */
 }
 
 .presentation-counter {
@@ -603,7 +637,7 @@ body.light-mode .presentation-nav {
     height: 70px;
     font-size: 2.5rem;
   }
-  
+
   .presentation-info h2 {
     font-size: 2rem;
   }
@@ -617,7 +651,7 @@ body.light-mode .presentation-nav {
     height: auto;
     position: relative;
   }
-  
+
   .header-actions {
     justify-content: center;
     width: 100%;
@@ -629,7 +663,7 @@ body.light-mode .presentation-nav {
     padding: 1rem;
     gap: 1.5rem;
   }
-  
+
   .presentation-nav {
     position: absolute;
     top: 50%;
@@ -640,7 +674,8 @@ body.light-mode .presentation-nav {
     height: 44px;
     font-size: 2.5rem;
     opacity: 0.7;
-    background: rgba(0, 0, 0, 0.4); /* Darker for visibility */
+    background: rgba(0, 0, 0, 0.4);
+    /* Darker for visibility */
     color: white;
     border-radius: 50%;
     border: 1px solid rgba(255, 255, 255, 0.2);
@@ -653,10 +688,11 @@ body.light-mode .presentation-nav {
   .presentation-nav.next {
     right: 0.5rem;
   }
-  
+
   .presentation-content {
     position: relative;
-    padding: 0 3rem; /* Leave room for arrows */
+    padding: 0 3rem;
+    /* Leave room for arrows */
     height: 90vh;
     display: flex;
     justify-content: center;
@@ -674,7 +710,8 @@ body.light-mode .presentation-nav {
     width: 50px;
     height: 50px;
     font-size: 1.8rem;
-    background: rgba(0,0,0,0.5); /* Higher visibility on mobile */
+    background: rgba(0, 0, 0, 0.5);
+    /* Higher visibility on mobile */
   }
 
   .presentation-image-wrapper {
@@ -682,7 +719,8 @@ body.light-mode .presentation-nav {
   }
 
   .presentation-image-wrapper.no-image {
-    flex: 0 0 20vh; /* Give it a clickable area on mobile when no image */
+    flex: 0 0 20vh;
+    /* Give it a clickable area on mobile when no image */
     width: 100%;
   }
 }

@@ -30,7 +30,7 @@ async function initDB() {
 
     try {
       await pool.query('ALTER TABLE items ADD COLUMN user_id INT');
-    } catch(e) {
+    } catch (e) {
       // Ignored if column already exists
     }
 
@@ -38,13 +38,14 @@ async function initDB() {
       await pool.query('ALTER TABLE items ADD COLUMN sort_order INT DEFAULT 0');
       // Initialize sort_order with ID for existing items
       await pool.query('UPDATE items SET sort_order = id WHERE sort_order = 0');
-    } catch(e) {
+    } catch (e) {
       // Ignored if column already exists
     }
 
     try {
-      await pool.query('ALTER TABLE items MODIFY COLUMN image_url VARCHAR(255) NULL');
-    } catch(e) {
+      await pool.query('ALTER TABLE items MODIFY COLUMN image_url TEXT NULL');
+      await pool.query('ALTER TABLE items MODIFY COLUMN title VARCHAR(255) NULL');
+    } catch (e) {
       // Ignore if already null
     }
 

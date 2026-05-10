@@ -37,7 +37,8 @@ function App() {
   const [editingId, setEditingId] = useState(null);
   const [editTitle, setEditTitle] = useState('');
   const [editDescription, setEditDescription] = useState('');
-  const [editImage, setEditImage] = useState(null);
+  const [editImages, setEditImages] = useState([]);
+  const [existingImages, setExistingImages] = useState([]);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -111,9 +112,10 @@ function App() {
 
   const startEdit = (item) => {
     setEditingId(item.id);
-    setEditTitle(item.title);
+    setEditTitle(item.title || '');
     setEditDescription(item.description || '');
-    setEditImage(null);
+    setEditImages([]);
+    setExistingImages(item.image_url ? item.image_url.split(',') : []);
   };
 
   const saveEdit = async (id) => {
@@ -121,14 +123,20 @@ function App() {
       const formData = new FormData();
       formData.append('title', editTitle);
       formData.append('description', editDescription);
-      if (editImage) {
-        formData.append('image', editImage);
+      
+      // Send the list of existing images to keep (as a comma-separated string)
+      formData.append('existing_images', existingImages.join(','));
+
+      if (editImages.length > 0) {
+        editImages.forEach(img => {
+          formData.append('images', img);
+        });
       }
 
       const response = await axios.put(`${API_URL}/api/items/${id}`, formData, getAxiosConfig());
       setItems(items.map(item => item.id === id ? response.data : item));
       setEditingId(null);
-      setEditImage(null);
+      setEditImages([]);
     } catch (error) {
       console.error('Failed to save edit:', error);
       alert('Failed to save edit. Make sure you are authorized!');
@@ -259,14 +267,47 @@ function App() {
                           ></textarea>
                           <div className="form-group" style={{ marginBottom: '1rem' }}>
                             <label style={{ fontSize: '0.8rem', opacity: 0.7, display: 'block', marginBottom: '0.5rem' }}>
-                              Replace Image (Optional)
+                              Current Images
                             </label>
-                            <input 
-                              type="file" 
-                              accept="image/*"
-                              onChange={(e) => setEditImage(e.target.files[0])}
-                              style={{ width: '100%', fontSize: '0.8rem' }}
-                            />
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1rem' }}>
+                              {existingImages.map((url, idx) => (
+                                <div key={idx} style={{ position: 'relative', width: '60px', height: '60px' }}>
+                                  <img 
+                                    src={url.startsWith('http') ? url : `${API_URL}${url}`} 
+                                    style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '4px' }} 
+                                  />
+                                  <button 
+                                    type="button" 
+                                    onClick={() => setExistingImages(existingImages.filter((_, i) => i !== idx))}
+                                    style={{ position: 'absolute', top: '-5px', right: '-5px', background: '#ff6b6b', color: 'white', border: 'none', borderRadius: '50%', width: '18px', height: '18px', fontSize: '12px', cursor: 'pointer', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                                  >&times;</button>
+                                </div>
+                              ))}
+                              {existingImages.length === 0 && <span style={{fontSize: '0.8rem', opacity: 0.5}}>No images</span>}
+                            </div>
+
+                            <label style={{ fontSize: '0.8rem', opacity: 0.7, display: 'block', marginBottom: '0.5rem' }}>
+                              Add More Images
+                            </label>
+                            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                              {editImages.map((img, idx) => (
+                                <div key={idx} style={{ fontSize: '0.75rem', display: 'flex', justifyContent: 'space-between' }}>
+                                  <span style={{overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'}}>{img.name}</span>
+                                  <button type="button" onClick={() => setEditImages(editImages.filter((_, i) => i !== idx))} style={{background:'none', border:'none', color:'#ff6b6b', cursor:'pointer'}}>&times;</button>
+                                </div>
+                              ))}
+                              <input 
+                                type="file" 
+                                accept="image/*"
+                                onChange={(e) => {
+                                  if (e.target.files[0]) {
+                                    setEditImages([...editImages, e.target.files[0]]);
+                                    e.target.value = '';
+                                  }
+                                }}
+                                style={{ width: '100%', fontSize: '0.8rem' }}
+                              />
+                            </div>
                           </div>
                           <div className="card-actions" style={{ opacity: 1 }}>
                             <button className="btn-edit" onClick={() => saveEdit(item.id)}>Save</button>
