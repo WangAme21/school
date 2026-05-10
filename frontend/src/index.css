@@ -607,12 +607,23 @@ body.light-mode .presentation-nav {
 
 .presentation-info h2 {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.8rem;
+  font-size: 3rem;
+  margin-bottom: 1.5rem;
+  color: #fff;
+  text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.theme-retro .presentation-info h2,
+.theme-retro .presentation-info p,
+.theme-retro .presentation-counter,
+.theme-gallery .presentation-info h2,
+.theme-gallery .presentation-info p,
+.theme-gallery .presentation-counter,
+.theme-solar .presentation-info h2,
+.theme-solar .presentation-info p,
+.theme-solar .presentation-counter {
   color: var(--pres-text);
-  margin-bottom: 1rem;
-  line-height: 1.1;
-  flex-shrink: 0;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  text-shadow: none;
 }
 
 .presentation-info p {
@@ -664,74 +675,92 @@ body.light-mode .presentation-nav {
 }
 
 /* Theme Overlays */
-.theme-midnight { background: radial-gradient(circle at center, #111, #050505); }
-.theme-solar { background: #fdf6e3; --pres-text: #586e75; --pres-sub: #657b83; --pres-acc: #268bd2; }
-.theme-neon { background: #0a0a0a; --pres-text: #ff00ff; --pres-sub: #00ffff; --pres-acc: #ffff00; }
-.theme-forest { background: linear-gradient(135deg, #0a1f1a, #050d0a); --pres-acc: #4ade80; }
-.theme-deepsea { background: linear-gradient(180deg, #005f73, #0a1f1a); --pres-acc: #94d2bd; }
+/* === THEME OVERLAYS & FRAMING SYSTEM === */
 
-/* New Premium Themes */
-.theme-gallery { 
-  background: #f8f8f8; 
-  --pres-text: #1a1a1a; 
-  --pres-sub: #4a4a4a; 
-  --pres-acc: #000; 
-}
-.theme-cyber { 
-  background: #0f0c29; 
-  background: linear-gradient(to right, #24243e, #302b63, #0f0c29);
-  --pres-text: #00f2fe;
-  --pres-sub: #4facfe;
-  --pres-acc: #ff00ff;
-}
-.theme-retro { 
-  background: #f4ebd0; 
-  --pres-text: #5d4037; 
-  --pres-sub: #8d6e63; 
-  --pres-acc: #3e2723;
-  background-image: url("https://www.transparenttextures.com/patterns/paper-fibers.png");
+/* Midnight: Glass & Space */
+.theme-midnight { background: radial-gradient(circle at 50% 50%, #1a1a1a, #050505); }
+.theme-midnight .presentation-frame {
+  background: rgba(255, 255, 255, 0.02);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 40px;
+  box-shadow: 0 0 100px rgba(0,0,0,0.5);
 }
 
-/* Framing System */
-.presentation-frame {
-  padding: 20px;
-  background: transparent;
-  transition: all 0.5s ease;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 100%;
-}
-
+/* Gallery: Professional Exhibit */
+.theme-gallery { background: #e0e0e0; }
 .theme-gallery .presentation-frame {
   background: white;
-  border: 15px solid #000;
-  box-shadow: 0 30px 60px rgba(0,0,0,0.3);
-}
-
-.theme-cyber .presentation-frame {
-  border: 2px solid var(--pres-text);
-  box-shadow: 0 0 20px var(--pres-text), inset 0 0 10px var(--pres-text);
+  padding: 40px;
+  border: 2px solid #ddd;
+  box-shadow: 
+    0 30px 60px rgba(0,0,0,0.2),
+    inset 0 0 10px rgba(0,0,0,0.05);
   position: relative;
 }
+.theme-gallery .presentation-frame::after {
+  content: '';
+  position: absolute;
+  top: -10px; left: -10px; right: -10px; bottom: -10px;
+  border: 20px solid #111;
+  pointer-events: none;
+}
 
+/* Retro: Polaroid & Tape */
+.theme-retro { 
+  background: #dcd3bd; 
+  background-image: url("https://www.transparenttextures.com/patterns/pinstriped-suit.png");
+  --pres-text: #3e2723; /* Much darker brown */
+  --pres-sub: #5d4037; 
+  --pres-acc: #8d6e63;
+}
 .theme-retro .presentation-frame {
-  background: white;
-  padding: 15px 15px 60px 15px; /* Polaroid style */
-  box-shadow: 5px 10px 20px rgba(0,0,0,0.1);
-  transform: rotate(-1deg);
+  background: #fdfdfd;
+  padding: 15px 15px 80px 15px;
+  box-shadow: 10px 15px 25px rgba(0,0,0,0.15);
+  transform: rotate(-1.5deg);
+  border-radius: 2px;
+}
+.theme-retro .presentation-frame::before {
+  content: '';
+  position: absolute;
+  top: -20px; left: 50%; transform: translateX(-50%);
+  width: 120px; height: 40px;
+  background: rgba(210, 180, 140, 0.3);
+  backdrop-filter: blur(2px);
+  z-index: 10;
 }
 
-.theme-neon .presentation-frame {
-  border: 4px solid var(--pres-text);
-  box-shadow: 0 0 30px var(--pres-text);
+/* Cyber: Neon Brackets */
+.theme-cyber { background: #050505; }
+.theme-cyber .presentation-frame {
+  border: 1px solid #00f2fe;
+  box-shadow: 0 0 20px #00f2fe, inset 0 0 15px rgba(0, 242, 254, 0.2);
+  background: rgba(0, 242, 254, 0.05);
+}
+.theme-cyber .ornate-corner {
+  border-width: 2px;
+  border-color: #ff00ff;
+  box-shadow: 0 0 10px #ff00ff;
+  width: 40px; height: 40px;
 }
 
-.theme-midnight .presentation-frame {
-  border-radius: 20px;
-  background: rgba(255,255,255,0.03);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.1);
+/* Forest: Organic Flourish */
+.theme-forest { background: linear-gradient(135deg, #0f2d25, #051410); }
+.theme-forest .presentation-frame {
+  border-radius: 100px 20px 100px 20px;
+  border: 3px solid #4ade80;
+  box-shadow: 0 0 40px rgba(74, 222, 128, 0.2);
+}
+
+/* Solar: Elegant Minimalist */
+.theme-solar { background: #fdf6e3; }
+.theme-solar .presentation-frame {
+  border: 1px solid #93a1a1;
+  border-radius: 4px;
+  box-shadow: 40px 40px 0 #93a1a1;
+  margin-right: 40px;
+  margin-bottom: 40px;
 }
 
 .theme-select {
@@ -759,38 +788,41 @@ body.light-mode .presentation-nav {
   color: white;
 }
 
+/* === ORNATE CORNERS SYSTEM === */
 .ornate-corner {
   position: absolute;
-  width: 100px;
-  height: 100px;
+  width: 150px;
+  height: 150px;
   pointer-events: none;
   z-index: 3500;
   transition: all 0.5s ease;
 }
 
-.ornate-corner::before,
-.ornate-corner::after {
-  content: '';
-  position: absolute;
-  background: var(--pres-acc);
-  opacity: 0.8;
+.theme-gallery .ornate-corner {
+  border: 2px solid #000;
+  width: 60px; height: 60px;
+}
+.theme-gallery .ornate-corner.tl { top: 40px; left: 40px; border-bottom: none; border-right: none; }
+.theme-gallery .ornate-corner.tr { top: 40px; right: 40px; border-bottom: none; border-left: none; }
+.theme-gallery .ornate-corner.bl { bottom: 40px; left: 40px; border-top: none; border-right: none; }
+.theme-gallery .ornate-corner.br { bottom: 40px; right: 40px; border-top: none; border-left: none; }
+
+.theme-retro .ornate-corner {
+  border-color: #8d6e63;
+  width: 80px; height: 80px;
+  opacity: 0.5;
 }
 
-/* Ornate Flourish Design */
-.ornate-corner.tl { top: 20px; left: 20px; border-top: 4px solid var(--pres-acc); border-left: 4px solid var(--pres-acc); border-top-left-radius: 20px; }
-.ornate-corner.tr { top: 20px; right: 20px; border-top: 4px solid var(--pres-acc); border-right: 4px solid var(--pres-acc); border-top-right-radius: 20px; }
-.ornate-corner.bl { bottom: 20px; left: 20px; border-bottom: 4px solid var(--pres-acc); border-left: 4px solid var(--pres-acc); border-bottom-left-radius: 20px; }
-.ornate-corner.br { bottom: 20px; right: 20px; border-bottom: 4px solid var(--pres-acc); border-right: 4px solid var(--pres-acc); border-bottom-right-radius: 20px; }
+.theme-midnight .ornate-corner {
+  border-color: rgba(255,255,255,0.2);
+  border-style: double;
+  border-width: 6px;
+}
 
-/* Flourish details */
-.ornate-corner.tl::after { width: 15px; height: 15px; border-radius: 50%; top: -10px; left: -10px; box-shadow: 30px 0 0 var(--pres-acc), 0 30px 0 var(--pres-acc); }
-.ornate-corner.tr::after { width: 15px; height: 15px; border-radius: 50%; top: -10px; right: -10px; box-shadow: -30px 0 0 var(--pres-acc), 0 30px 0 var(--pres-acc); }
-.ornate-corner.bl::after { width: 15px; height: 15px; border-radius: 50%; bottom: -10px; left: -10px; box-shadow: 30px 0 0 var(--pres-acc), 0 -30px 0 var(--pres-acc); }
-.ornate-corner.br::after { width: 15px; height: 15px; border-radius: 50%; bottom: -10px; right: -10px; box-shadow: -30px 0 0 var(--pres-acc), 0 -30px 0 var(--pres-acc); }
-
-.theme-gallery .ornate-corner { border-width: 8px; border-color: #000; }
-.theme-retro .ornate-corner { border-color: #d4af37; border-width: 5px; } /* Gold */
-.theme-cyber .ornate-corner { border-color: #00f2fe; border-width: 2px; box-shadow: 0 0 15px #00f2fe; }
+.ornate-corner.tl { top: 30px; left: 30px; border-top-width: 4px; border-left-width: 4px; border-radius: 10px 0 0 0; }
+.ornate-corner.tr { top: 30px; right: 30px; border-top-width: 4px; border-right-width: 4px; border-radius: 0 10px 0 0; }
+.ornate-corner.bl { bottom: 30px; left: 30px; border-bottom-width: 4px; border-left-width: 4px; border-radius: 0 0 0 10px; }
+.ornate-corner.br { bottom: 30px; right: 30px; border-bottom-width: 4px; border-right-width: 4px; border-radius: 0 0 10px 0; }
 
 /* Responsive */
 @media (max-width: 900px) {
