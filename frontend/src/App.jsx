@@ -40,6 +40,10 @@ function App() {
   const [editImages, setEditImages] = useState([]);
   const [existingImages, setExistingImages] = useState([]);
   const [presentationTheme, setPresentationTheme] = useState(localStorage.getItem('presentationTheme') || 'midnight');
+  
+  // Pagination state
+  const [itemsPerPage, setItemsPerPage] = useState('all');
+  const [currentPage, setCurrentPage] = useState(1);
 
   const updateTheme = (newTheme) => {
     setPresentationTheme(newTheme);
@@ -179,6 +183,23 @@ function App() {
     }
   };
 
+  // Calculate paginated items
+  const isAllItems = itemsPerPage === 'all';
+  const limit = isAllItems ? items.length : parseInt(itemsPerPage);
+  const totalPages = isAllItems ? 1 : Math.ceil(items.length / limit);
+  
+  const paginatedItems = isAllItems 
+    ? items 
+    : items.slice((currentPage - 1) * limit, currentPage * limit);
+
+  // Handle page change
+  const handlePageChange = (newPage) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
   return (
     <>
       <header>
@@ -192,6 +213,23 @@ function App() {
           >
             {isLightMode ? '🌙' : '☀️'}
           </button>
+
+          <div className="main-theme-picker" style={{ marginRight: '1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
+            <span style={{ fontSize: '0.85rem', fontWeight: '600', opacity: 0.8 }}>Items per page:</span>
+            <select 
+              value={itemsPerPage} 
+              onChange={(e) => {
+                setItemsPerPage(e.target.value);
+                setCurrentPage(1); // Reset to first page
+              }}
+              className="theme-select"
+            >
+              <option value="all">All</option>
+              <option value="5">5 items</option>
+              <option value="10">10 items</option>
+              <option value="20">20 items</option>
+            </select>
+          </div>
 
           <div className="main-theme-picker" style={{ marginRight: '1.5rem', display: 'flex', gap: '0.75rem', alignItems: 'center' }}>
             <span style={{ fontSize: '0.85rem', fontWeight: '600', opacity: 0.8 }}>Exhibit Style:</span>
@@ -246,7 +284,7 @@ function App() {
               items={items.map(item => item.id)}
               strategy={rectSortingStrategy}
             >
-              {items.map(item => (
+              {paginatedItems.map(item => (
                 <SortableItem key={item.id} id={item.id} disabled={!token || item.author_username !== currentUsername || editingId === item.id}>
                   <div className="portfolio-card">
                     {item.image_url && (
@@ -377,6 +415,39 @@ function App() {
               ))}
             </SortableContext>
           </DndContext>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {!isAllItems && totalPages > 1 && (
+        <div className="pagination">
+          <button 
+            disabled={currentPage === 1} 
+            onClick={() => handlePageChange(currentPage - 1)}
+            className="page-btn"
+          >
+            &larr; Prev
+          </button>
+          
+          <div className="page-numbers">
+            {[...Array(totalPages)].map((_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`page-number ${currentPage === i + 1 ? 'active' : ''}`}
+              >
+                {i + 1}
+              </button>
+            ))}
+          </div>
+
+          <button 
+            disabled={currentPage === totalPages} 
+            onClick={() => handlePageChange(currentPage + 1)}
+            className="page-btn"
+          >
+            Next &rarr;
+          </button>
         </div>
       )}
 
